@@ -1,0 +1,53 @@
+main {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    margin-top: 30px;
+}
+
+.ql-editor {
+    height: 500px;
+}
+
+.ql-editor .flex-box {
+    border: 1px dotted;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    min-height: 200px;
+    vertical-align: top;
+}
+
+.flex-box ~ .flex-box {
+    margin-top: 5px;
+}
+
+.flex-box > img {
+    display: block;
+}
+
+.flex-column {
+    min-height: 200px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    flex: 1;
+}
+
+.flex-column ~ .flex-column {
+    border-left: 1px dotted;
+}
+
+@media screen and (min-width: 641px) {
+    .flex-box {
+        display: inline-block;
+        width: 50%;
+    }
+
+    /* .flex-box:nth-of-type(odd) + .flex-box {
+        border-left: none;
+    } */
+}
+
