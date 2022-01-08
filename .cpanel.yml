@@ -2,7 +2,6 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/dqzrbpgr2sqc/public_html/Documentation/test.auibwd.xyz/
-    - /bin/cp -R images $DEPLOYPATH
     - /bin/cp index.html $DEPLOYPATH
     - /bin/cp style.css $DEPLOYPATH
     - /bin/cp main.js $DEPLOYPATH
