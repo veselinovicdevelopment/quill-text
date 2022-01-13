@@ -1,9 +1,9 @@
-const BlockEmbed = Quill.import('blots/block/embed');
+const Block = Quill.import('blots/block');
 //Define a new blog type
-class FlexBox extends BlockEmbed {
+class FlexBox extends Block {
 	static create(value) {
 		const node = super.create(value);
-		node.setAttribute('contenteditable', 'true');
+		// node.setAttribute('contenteditable', 'true');
 		// node.setAttribute('custom-flex', true);
 
 		//Set custom HTML
@@ -31,17 +31,72 @@ FlexBox.className = 'flex-box';
 FlexBox.tagName = 'div';
 Quill.register(FlexBox, true);
 
+let Inline = Quill.import('blots/inline');
+
+class SpanBlock extends Inline {
+	static create(value) {
+		let node = super.create(value);
+		node.setAttribute('class', 'spanblock');
+		node.innerHTML = value;
+		return node;
+	}
+}
+
+SpanBlock.blotName = 'spanblock';
+SpanBlock.tagName = 'div';
+Quill.register(SpanBlock);
+
+class HeaderBlot extends Block {
+	// formats(node) {
+	// 	return HeaderBlot.tagName.indexOf(node.tagName) + 1;
+	// }
+}
+HeaderBlot.blotName = 'header';
+// Medium only supports two header sizes, so we will only demonstrate two,
+// but we could easily just add more tags into this array
+HeaderBlot.tagName = ['H1', 'H2'];
+Quill.register(HeaderBlot);
+
+function customHeaderHandler(val, next) {
+	console.log(val, next);
+}
+
+const bindings = {
+	enter: {
+		key: 13,
+		shiftKey: null,
+		handler: (range, context) => {
+			if (context.format.FlexBox) {
+				this.quill.scroll.deleteAt(range.index, context.suffix.length);
+				if (context.suffix == "") {
+					this.quill.insertText(range.index, " ");
+					this.quill.insertEmbed(range.index, 'spanblock', " ");
+				} else {
+					this.quill.insertEmbed(range.index, 'spanblock', context.suffix);
+				}
+			} else {
+				if (range.length > 0) {
+					this.quill.scroll.deleteAt(range.index, range.length); // So we do not trigger text-change
+				}
+				this.quill.insertText(range.index, '\n');
+			}
+		}
+	}
+};
+
 var quill = new Quill('#editor', {
 	modules: {
 		toolbar: {
-			container: "#toolbar"
+			container: "#toolbar",
+			// handlers: {
+			// 	'header': customHeaderHandler
+			// }
+		},
+		keyboard: {
+			bindings
 		},
 	},
 	placeholder: "What is on your mind ?",
-	theme: "snow"
-});
-
-var quill2 = new Quill("#editor2", {
 	theme: "snow"
 });
 
@@ -58,31 +113,20 @@ flexBox.addEventListener('click', function () {
 			limit++;
 			if (quill.getText(endIndex, 1) == "\n") {
 				flag = true;
+				// endIndex--;
 			}
 			endIndex++;
 		}
-		quill.insertEmbed(endIndex || 0, 'FlexBox', '<p> </p>');
-		quill.insertEmbed(endIndex || 0, 'FlexBox', '<p> </p>');
+		quill.insertEmbed(endIndex || 0, 'FlexBox', ' ');
+		quill.insertEmbed(endIndex || 0, 'FlexBox', ' ');
 	}
 });
 
 quill.on('text-change', function (arg) {
-	console.log(arg.ops[0].retain);
-	// setTimeout(() => {
-	// 	var br = document.querySelector(".flex-box > br");
-	// 	if (br) {
-	// 		br.closest(".flex-box").innerHTML = " ";
-	// 	}
-	// }, 1);
-});
-<p><span>asdfs</span></p>
-// var buttons = document.querySelectorAll('#toolbar button, #toolbar select');
-var buttons = document.querySelectorAll('#toolbar .ql-header');
-buttons.forEach((button, index) => {
-	button.addEventListener('click', function () {
-		var content = document.querySelector('.flex-box').innerHTML;
-		// document.querySelector('#editor2').innerHTML = content;
-		quill2.
-		// document.querySelector('.flex-box').innerHTML = "";
-	});
+	setTimeout(() => {
+		var br = document.querySelector(".flex-box > br:first-child");
+		if (br) {
+			br.closest(".flex-box").innerHTML = " ";
+		}
+	}, 1);
 });

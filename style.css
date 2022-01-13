@@ -1,4 +1,3 @@
-
 main {
     margin-left: auto;
     margin-right: auto;
@@ -30,10 +29,6 @@ main {
     display: block;
 }
 
-.flex-box > br:first-child {
-    display: none;
-}
-
 .flex-column {
     min-height: 200px;
     margin-top: 10px;
@@ -55,3 +50,4 @@ main {
         border-left: none;
     } */
 }
+
