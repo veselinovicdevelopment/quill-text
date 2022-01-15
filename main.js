@@ -12,6 +12,7 @@ class FlexBox extends Block {
 	}
 
 	static transformValue(value) {
+		console.log("transform is", value);
 		let handleArr = value.split('\n')
 		handleArr = handleArr.map(e => e.replace(/^[\s]+/, '')
 			.replace(/[\s]+$/, ''))
@@ -20,7 +21,7 @@ class FlexBox extends Block {
 
 	//Returns the value of the node itself for undo operation
 	static value(node) {
-		return node.innerHTML
+		// return node.innerHTML
 	}
 }
 // blotName
@@ -46,16 +47,16 @@ SpanBlock.blotName = 'spanblock';
 SpanBlock.tagName = 'div';
 Quill.register(SpanBlock);
 
-class HeaderBlot extends Block {
-	// formats(node) {
-	// 	return HeaderBlot.tagName.indexOf(node.tagName) + 1;
-	// }
-}
-HeaderBlot.blotName = 'header';
-// Medium only supports two header sizes, so we will only demonstrate two,
-// but we could easily just add more tags into this array
-HeaderBlot.tagName = ['H1', 'H2'];
-Quill.register(HeaderBlot);
+// class HeaderBlot extends Block {
+// 	// formats(node) {
+// 	// 	return HeaderBlot.tagName.indexOf(node.tagName) + 1;
+// 	// }
+// }
+// HeaderBlot.blotName = 'header';
+// // Medium only supports two header sizes, so we will only demonstrate two,
+// // but we could easily just add more tags into this array
+// HeaderBlot.tagName = ['H1', 'H2'];
+// Quill.register(HeaderBlot);
 
 function customHeaderHandler(val, next) {
 	console.log(val, next);
@@ -68,11 +69,23 @@ const bindings = {
 		handler: (range, context) => {
 			if (context.format.FlexBox) {
 				this.quill.scroll.deleteAt(range.index, context.suffix.length);
-				if (context.suffix == "") {
-					this.quill.insertText(range.index, " ");
-					this.quill.insertEmbed(range.index, 'spanblock', " ");
+
+				if (context.format.spanblock) {
+					if (context.suffix == "") {
+						this.quill.insertText(range.index, " ");
+						this.quill.insertEmbed(range.index + 1, 'spanblock', " ");
+					} else {
+						this.quill.insertEmbed(range.index, 'spanblock', context.suffix);
+						this.quill.insertText(range.index, " ");
+					}
 				} else {
-					this.quill.insertEmbed(range.index, 'spanblock', context.suffix);
+					if (context.suffix == "") {
+						this.quill.insertEmbed(range.index, 'spanblock', " ");
+						this.quill.insertText(range.index, " ");
+						this.quill.insertEmbed(range.index, 'spanblock', " ");
+					} else {
+						this.quill.insertEmbed(range.index, 'spanblock', context.suffix);
+					}
 				}
 			} else {
 				if (range.length > 0) {
@@ -130,3 +143,44 @@ quill.on('text-change', function (arg) {
 		}
 	}, 1);
 });
+
+window.addEventListener('click', function(e) {
+	if(arguments[0].path[0].className === 'flex-box') {
+		document.querySelectorAll('.ql-header').forEach(item => {
+				item.setAttribute('style', 'display: none');
+		})
+
+		document.querySelector('.ql-flexbox').setAttribute('style', 'display: none');
+	} else {
+			document.querySelectorAll('.ql-header').forEach(item => {
+					item.removeAttribute('style');
+			})
+
+			document.querySelector('.ql-flexbox').removeAttribute('style');
+	}
+})
+
+// window.addEventListener('keydown', function(e) {
+// 	console.log("Event is",e);
+// 	// if(arguments[0].path[0].className === 'flex-box') {
+// 	// 	document.querySelectorAll('.ql-header').forEach(item => {
+// 	// 			item.setAttribute('style', 'display: none');
+// 	// 	})
+
+// 	// 	document.querySelector('.ql-flexbox').setAttribute('style', 'display: none');
+// 	// } else {
+// 	// 		document.querySelectorAll('.ql-header').forEach(item => {
+// 	// 				item.removeAttribute('style');
+// 	// 		})
+
+// 	// 		document.querySelector('.ql-flexbox').removeAttribute('style');
+// 	// }
+
+// 	if(e.key === 'Enter') {
+		
+// 	}
+// })
+
+// document.querySelector('.flex-box').addEventListener('keydown', function(e) {
+// 	console.log("Event is",e);
+// })
