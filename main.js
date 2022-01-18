@@ -3,9 +3,6 @@ const Block = Quill.import('blots/block');
 class FlexBox extends Block {
 	static create(value) {
 		const node = super.create(value);
-		// node.setAttribute('contenteditable', 'true');
-		// node.setAttribute('custom-flex', true);
-
 		//Set custom HTML
 		node.innerHTML = value;
 		return node;
@@ -47,17 +44,6 @@ SpanBlock.blotName = 'spanblock';
 SpanBlock.tagName = 'div';
 Quill.register(SpanBlock);
 
-// class HeaderBlot extends Block {
-// 	// formats(node) {
-// 	// 	return HeaderBlot.tagName.indexOf(node.tagName) + 1;
-// 	// }
-// }
-// HeaderBlot.blotName = 'header';
-// // Medium only supports two header sizes, so we will only demonstrate two,
-// // but we could easily just add more tags into this array
-// HeaderBlot.tagName = ['H1', 'H2'];
-// Quill.register(HeaderBlot);
-
 function customHeaderHandler(val, next) {
 	console.log(val, next);
 }
@@ -68,24 +54,12 @@ const bindings = {
 		shiftKey: null,
 		handler: (range, context) => {
 			if (context.format.FlexBox) {
-				this.quill.scroll.deleteAt(range.index, context.suffix.length);
-
-				if (context.format.spanblock) {
-					if (context.suffix == "") {
-						this.quill.insertText(range.index, " ");
-						this.quill.insertEmbed(range.index + 1, 'spanblock', " ");
-					} else {
-						this.quill.insertEmbed(range.index, 'spanblock', context.suffix);
-						this.quill.insertText(range.index, " ");
-					}
+				if (context.suffix == "") {
+					this.quill.insertText(range.index - 1, this.quill.getText(range.index - 1, 1) + " ");
+					this.quill.scroll.deleteAt(range.index + 1, 1);
+					this.quill.insertEmbed(range.index, 'spanblock', " ");
 				} else {
-					if (context.suffix == "") {
-						this.quill.insertEmbed(range.index, 'spanblock', " ");
-						this.quill.insertText(range.index, " ");
-						this.quill.insertEmbed(range.index, 'spanblock', " ");
-					} else {
-						this.quill.insertEmbed(range.index, 'spanblock', context.suffix);
-					}
+					this.quill.insertEmbed(range.index, 'spanblock', " ");
 				}
 			} else {
 				if (range.length > 0) {
@@ -101,9 +75,6 @@ var quill = new Quill('#editor', {
 	modules: {
 		toolbar: {
 			container: "#toolbar",
-			// handlers: {
-			// 	'header': customHeaderHandler
-			// }
 		},
 		keyboard: {
 			bindings
@@ -130,11 +101,18 @@ flexBox.addEventListener('click', function () {
 			}
 			endIndex++;
 		}
+
+		if (endIndex == quill.getLength()) {
+			quill.insertText(endIndex || 0, '\n');
+		}
 		quill.insertEmbed(endIndex || 0, 'FlexBox', ' ');
 		quill.insertEmbed(endIndex || 0, 'FlexBox', ' ');
 	}
 });
 
+/**
+ * First letter for flex box
+ */
 quill.on('text-change', function (arg) {
 	setTimeout(() => {
 		var br = document.querySelector(".flex-box > br:first-child");
@@ -144,43 +122,32 @@ quill.on('text-change', function (arg) {
 	}, 1);
 });
 
-window.addEventListener('click', function(e) {
-	if(arguments[0].path[0].className === 'flex-box') {
-		document.querySelectorAll('.ql-header').forEach(item => {
+let blockElements = ['ql-header', 'ql-flexbox', 'ql-list', 'ql-blockquote', 'ql-code-block'];
+
+/**
+ * Flex box focus action
+ */
+window.addEventListener('click', function (e) {
+	let isInFlexBox = false;
+	let flag = false;
+	arguments[0].path.forEach(item => {
+		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('flex-box')) isInFlexBox = true;
+		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('ql-editor')) flag = true;
+	})
+
+	if (!flag) return;
+
+	if (isInFlexBox) {
+		blockElements.forEach(el => {
+			document.querySelectorAll('.' + el).forEach(item => {
 				item.setAttribute('style', 'display: none');
-		})
-
-		document.querySelector('.ql-flexbox').setAttribute('style', 'display: none');
-	} else {
-			document.querySelectorAll('.ql-header').forEach(item => {
-					item.removeAttribute('style');
 			})
-
-			document.querySelector('.ql-flexbox').removeAttribute('style');
+		})
+	} else {
+		blockElements.forEach(el => {
+			document.querySelectorAll('.' + el).forEach(item => {
+				item.removeAttribute('style');
+			})
+		})
 	}
 })
-
-// window.addEventListener('keydown', function(e) {
-// 	console.log("Event is",e);
-// 	// if(arguments[0].path[0].className === 'flex-box') {
-// 	// 	document.querySelectorAll('.ql-header').forEach(item => {
-// 	// 			item.setAttribute('style', 'display: none');
-// 	// 	})
-
-// 	// 	document.querySelector('.ql-flexbox').setAttribute('style', 'display: none');
-// 	// } else {
-// 	// 		document.querySelectorAll('.ql-header').forEach(item => {
-// 	// 				item.removeAttribute('style');
-// 	// 		})
-
-// 	// 		document.querySelector('.ql-flexbox').removeAttribute('style');
-// 	// }
-
-// 	if(e.key === 'Enter') {
-		
-// 	}
-// })
-
-// document.querySelector('.flex-box').addEventListener('keydown', function(e) {
-// 	console.log("Event is",e);
-// })

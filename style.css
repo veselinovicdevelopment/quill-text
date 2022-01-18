@@ -44,6 +44,18 @@ main {
   border-left: 1px dotted;
 }
 
+/* .spanblock {
+  display: inline-block;
+} */
+
+.spanblock {
+  height: 0;
+}
+
+/* strong .spanblock {
+  display: inline;
+} */
+
 @media screen and (min-width: 641px) {
   .flex-box {
     display: inline-block;
