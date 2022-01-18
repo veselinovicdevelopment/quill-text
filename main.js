@@ -44,10 +44,6 @@ SpanBlock.blotName = 'spanblock';
 SpanBlock.tagName = 'div';
 Quill.register(SpanBlock);
 
-function customHeaderHandler(val, next) {
-	console.log(val, next);
-}
-
 const bindings = {
 	enter: {
 		key: 13,
@@ -58,8 +54,14 @@ const bindings = {
 					this.quill.insertText(range.index - 1, this.quill.getText(range.index - 1, 1) + " ");
 					this.quill.scroll.deleteAt(range.index + 1, 1);
 					this.quill.insertEmbed(range.index, 'spanblock', " ");
+					this.quill.setSelection(range.index + 1);
+					this.quill.insertText(range.index + 1, ' ');
+					this.quill.scroll.deleteAt(range.index + 1, 1);
 				} else {
 					this.quill.insertEmbed(range.index, 'spanblock', " ");
+					this.quill.setSelection(range.index + 1);
+					this.quill.insertText(range.index + 1, ' ');
+					this.quill.scroll.deleteAt(range.index + 1, 1);
 				}
 			} else {
 				if (range.length > 0) {
@@ -118,6 +120,11 @@ quill.on('text-change', function (arg) {
 		var br = document.querySelector(".flex-box > br:first-child");
 		if (br) {
 			br.closest(".flex-box").innerHTML = " ";
+		}
+
+		var spans = document.querySelectorAll('.spanblock');
+		for (let i = 0; i < spans.length; i++) {
+			spans[i].innerHTML = "\n";
 		}
 	}, 1);
 });
