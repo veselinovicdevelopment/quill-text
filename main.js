@@ -44,13 +44,32 @@ SpanBlock.blotName = 'spanblock';
 SpanBlock.tagName = 'div';
 Quill.register(SpanBlock);
 
+class DefinitionEl extends Inline {
+	static create(value) {
+		let node = super.create(value);
+		node.setAttribute('data-thesaurus', value);
+		node.setAttribute('href', '#');
+		node.setAttribute('class', 'dl');
+		// node.innerHTML = value;
+		return node;
+	}
+
+	static formats(node) {
+		return node.getAttribute('data-thesaurus');
+	}
+}
+
+DefinitionEl.blotName = 'dl';
+DefinitionEl.tagName = 'a';
+Quill.register(DefinitionEl);
+
 const bindings = {
 	enter: {
 		key: 13,
 		shiftKey: null,
 		handler: (range, context) => {
 			if (context.format.FlexBox) {
-				if (context.suffix == "") {
+				if (context.suffix == "" && context.prefix !== "\n") {
 					this.quill.insertText(range.index - 1, this.quill.getText(range.index - 1, 1) + " ");
 					this.quill.scroll.deleteAt(range.index + 1, 1);
 					this.quill.insertEmbed(range.index, 'spanblock', " ");
@@ -58,10 +77,19 @@ const bindings = {
 					this.quill.insertText(range.index + 1, ' ');
 					this.quill.scroll.deleteAt(range.index + 1, 1);
 				} else {
-					this.quill.insertEmbed(range.index, 'spanblock', " ");
-					this.quill.setSelection(range.index + 1);
-					this.quill.insertText(range.index + 1, ' ');
-					this.quill.scroll.deleteAt(range.index + 1, 1);
+					if(context.prefix == "\n") {
+						this.quill.insertText(range.index, " ");
+						this.quill.insertEmbed(range.index + 1, 'spanblock', " ");
+						this.quill.setSelection(range.index + 2);
+						this.quill.insertText(range.index + 2, ' ');
+						this.quill.scroll.deleteAt(range.index + 2, 1);
+						
+					} else {
+						this.quill.insertEmbed(range.index, 'spanblock', " ");
+						this.quill.setSelection(range.index + 1);
+						this.quill.insertText(range.index + 1, ' ');
+						this.quill.scroll.deleteAt(range.index + 1, 1);
+					}
 				}
 			} else {
 				if (range.length > 0) {
@@ -112,6 +140,79 @@ flexBox.addEventListener('click', function () {
 	}
 });
 
+
+/**
+ * Modal Action
+ */
+// const modal = document.querySelector(".modal");
+// const modalContent = document.querySelector(".modal-content");
+// const closeButton = document.querySelector(".close-button");
+// const cancelButton = document.querySelector(".btn-cancel");
+// const removeButton = document.querySelector(".btn-remove");
+// const storeButton = document.querySelector(".btn-store");
+// const dlSubtitle = document.querySelector('.dl-subtitle');
+// const dlDescription = document.querySelector('.dl-description');
+// let dlNode;
+
+// function toggleModal() {
+// 	modal.classList.toggle("show-modal");
+// }
+
+// function windowOnClick(event) {
+// 	if (event.target === modal) {
+// 		toggleModal();
+// 	}
+// }
+
+// function storeDescription() {
+// 	const value = dlDescription.value;
+// 	if(value == "") {
+// 		window.alert("Please enter description text");
+// 		return;
+// 	}
+
+// 	if(dlNode) {
+// 		dlNode.setAttribute('data-thesaurus', value);
+// 	} else {
+// 		quill.format('dl', value);
+// 	}
+
+// 	toggleModal();
+// }
+
+// function removeDescription() {
+// 	if(dlNode) {
+// 		dlNode.outerHTML = dlNode.innerHTML;
+// 	}
+// 	toggleModal();
+// }
+
+// closeButton.addEventListener("click", toggleModal);
+// cancelButton.addEventListener("click", toggleModal);
+// window.addEventListener("click", windowOnClick);
+
+// storeButton.addEventListener("click", storeDescription);
+// removeButton.addEventListener("click", removeDescription);
+
+// modalContent.addEventListener("click", function (e) {
+// 	e.stopPropagation();
+// });
+
+// var DefButton = document.querySelector('.ql-definition');
+// DefButton.addEventListener('click', function () {
+// 	var range = quill.getSelection();
+// 	if (range && range.length > 0) {
+// 		const selectedTxt = quill.getText(range.index, range.length);
+// 		dlSubtitle.innerHTML = selectedTxt;
+// 		dlDescription.value = "";
+// 		dlNode = null;
+// 		toggleModal();
+
+// 	} else {
+// 		window.alert('Please select word/words');
+// 	}
+// });
+
 /**
  * First letter for flex box
  */
@@ -140,6 +241,12 @@ window.addEventListener('click', function (e) {
 	arguments[0].path.forEach(item => {
 		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('flex-box')) isInFlexBox = true;
 		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('ql-editor')) flag = true;
+		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('dl')) {
+			dlSubtitle.innerHTML = item.innerText;
+			dlDescription.value = item.getAttribute('data-thesaurus');
+			dlNode = item;
+			toggleModal();
+		}
 	})
 
 	if (!flag) return;
@@ -158,3 +265,4 @@ window.addEventListener('click', function (e) {
 		})
 	}
 })
+
