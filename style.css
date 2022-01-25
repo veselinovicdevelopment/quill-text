@@ -9,7 +9,7 @@ main {
   height: 500px;
 }
 
-.ql-editor .flex-box {
+.ql-editor .quill-custom-column {
   border: 1px dotted;
   padding-left: 10px;
   padding-right: 10px;
@@ -21,13 +21,13 @@ main {
   vertical-align: top;
 }
 
-.flex-box ~ .flex-box {
+.quill-custom-column ~ .quill-custom-column {
   margin-top: 5px;
 }
 
-.flex-box > img {
+/* .quill-custom-column > img {
   display: block;
-}
+} */
 
 .flex-column {
   min-height: 200px;
@@ -105,12 +105,12 @@ main {
 }
 
 @media screen and (min-width: 641px) {
-  .flex-box {
+  .quill-custom-column {
     display: inline-block;
     width: 50%;
   }
 
-  /* .flex-box:nth-of-type(odd) + .flex-box {
+  /* .quill-custom-column:nth-of-type(odd) + .quill-custom-column {
         border-left: none;
     } */
 }

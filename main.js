@@ -24,7 +24,7 @@ class FlexBox extends Block {
 // blotName
 FlexBox.blotName = 'FlexBox';
 //The class name will be used to match the blot name
-FlexBox.className = 'flex-box';
+FlexBox.className = 'quill-custom-column';
 //Label type customization
 FlexBox.tagName = 'div';
 Quill.register(FlexBox, true);
@@ -50,7 +50,6 @@ class DefinitionEl extends Inline {
 		node.setAttribute('data-thesaurus', value);
 		node.setAttribute('href', '#');
 		node.setAttribute('class', 'dl');
-		// node.innerHTML = value;
 		return node;
 	}
 
@@ -70,12 +69,18 @@ const bindings = {
 		handler: (range, context) => {
 			if (context.format.FlexBox) {
 				if (context.suffix == "" && context.prefix !== "\n") {
-					this.quill.insertText(range.index - 1, this.quill.getText(range.index - 1, 1) + " ");
-					this.quill.scroll.deleteAt(range.index + 1, 1);
-					this.quill.insertEmbed(range.index, 'spanblock', " ");
-					this.quill.setSelection(range.index + 1);
-					this.quill.insertText(range.index + 1, ' ');
-					this.quill.scroll.deleteAt(range.index + 1, 1);
+					if(context.prefix == "") {
+						this.quill.insertText(range.index, " ");
+						this.quill.insertEmbed(range.index, 'spanblock', " ");
+						this.quill.setSelection(range.index + 2);
+					} else {
+						this.quill.insertText(range.index - 1, this.quill.getText(range.index - 1, 1) + " ");
+						this.quill.scroll.deleteAt(range.index + 1, 1);
+						this.quill.insertEmbed(range.index, 'spanblock', " ");
+						this.quill.setSelection(range.index + 1);
+						this.quill.insertText(range.index + 1, ' ');
+						this.quill.scroll.deleteAt(range.index + 1, 1);
+					}
 				} else {
 					if(context.prefix == "\n") {
 						this.quill.insertText(range.index, " ");
@@ -213,14 +218,19 @@ flexBox.addEventListener('click', function () {
 // 	}
 // });
 
+
+let blockElements = ['ql-header', 'ql-flexbox', 'ql-list', 'ql-blockquote', 'ql-code-block', 'ql-clean'];
+
 /**
  * First letter for flex box
  */
 quill.on('text-change', function (arg) {
+	let format = quill.getFormat();
+	toolBarHandler(format.FlexBox);
 	setTimeout(() => {
-		var br = document.querySelector(".flex-box > br:first-child");
+		var br = document.querySelector(".quill-custom-column > br:first-child");
 		if (br) {
-			br.closest(".flex-box").innerHTML = " ";
+			br.closest(".quill-custom-column").innerHTML = " ";
 		}
 
 		var spans = document.querySelectorAll('.spanblock');
@@ -230,7 +240,10 @@ quill.on('text-change', function (arg) {
 	}, 1);
 });
 
-let blockElements = ['ql-header', 'ql-flexbox', 'ql-list', 'ql-blockquote', 'ql-code-block'];
+quill.on('selection-change', function (arg) {
+	let format = quill.getFormat();
+	toolBarHandler(format.FlexBox);
+}) 
 
 /**
  * Flex box focus action
@@ -239,7 +252,7 @@ window.addEventListener('click', function (e) {
 	let isInFlexBox = false;
 	let flag = false;
 	arguments[0].path.forEach(item => {
-		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('flex-box')) isInFlexBox = true;
+		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('quill-custom-column')) isInFlexBox = true;
 		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('ql-editor')) flag = true;
 		if (item && item.className && typeof (item.className) == 'string' && item.className.includes('dl')) {
 			dlSubtitle.innerHTML = item.innerText;
@@ -250,7 +263,10 @@ window.addEventListener('click', function (e) {
 	})
 
 	if (!flag) return;
+	toolBarHandler(isInFlexBox);
+});
 
+function toolBarHandler(isInFlexBox) {
 	if (isInFlexBox) {
 		blockElements.forEach(el => {
 			document.querySelectorAll('.' + el).forEach(item => {
@@ -264,5 +280,5 @@ window.addEventListener('click', function (e) {
 			})
 		})
 	}
-})
+}
 
