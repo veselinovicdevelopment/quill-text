@@ -149,74 +149,74 @@ flexBox.addEventListener('click', function () {
 /**
  * Modal Action
  */
-// const modal = document.querySelector(".modal");
-// const modalContent = document.querySelector(".modal-content");
-// const closeButton = document.querySelector(".close-button");
-// const cancelButton = document.querySelector(".btn-cancel");
-// const removeButton = document.querySelector(".btn-remove");
-// const storeButton = document.querySelector(".btn-store");
-// const dlSubtitle = document.querySelector('.dl-subtitle');
-// const dlDescription = document.querySelector('.dl-description');
-// let dlNode;
+const modal = document.querySelector(".modal");
+const modalContent = document.querySelector(".modal-content");
+const closeButton = document.querySelector(".close-button");
+const cancelButton = document.querySelector(".btn-cancel");
+const removeButton = document.querySelector(".btn-remove");
+const storeButton = document.querySelector(".btn-store");
+const dlSubtitle = document.querySelector('.dl-subtitle');
+const dlDescription = document.querySelector('.dl-description');
+let dlNode;
 
-// function toggleModal() {
-// 	modal.classList.toggle("show-modal");
-// }
+function toggleModal() {
+	modal.classList.toggle("show-modal");
+}
 
-// function windowOnClick(event) {
-// 	if (event.target === modal) {
-// 		toggleModal();
-// 	}
-// }
+function windowOnClick(event) {
+	if (event.target === modal) {
+		toggleModal();
+	}
+}
 
-// function storeDescription() {
-// 	const value = dlDescription.value;
-// 	if(value == "") {
-// 		window.alert("Please enter description text");
-// 		return;
-// 	}
+function storeDescription() {
+	const value = dlDescription.value;
+	if(value == "") {
+		window.alert("Please enter description text");
+		return;
+	}
 
-// 	if(dlNode) {
-// 		dlNode.setAttribute('data-thesaurus', value);
-// 	} else {
-// 		quill.format('dl', value);
-// 	}
+	if(dlNode) {
+		dlNode.setAttribute('data-thesaurus', value);
+	} else {
+		quill.format('dl', value);
+	}
 
-// 	toggleModal();
-// }
+	toggleModal();
+}
 
-// function removeDescription() {
-// 	if(dlNode) {
-// 		dlNode.outerHTML = dlNode.innerHTML;
-// 	}
-// 	toggleModal();
-// }
+function removeDescription() {
+	if(dlNode) {
+		dlNode.outerHTML = dlNode.innerHTML;
+	}
+	toggleModal();
+}
 
-// closeButton.addEventListener("click", toggleModal);
-// cancelButton.addEventListener("click", toggleModal);
-// window.addEventListener("click", windowOnClick);
+closeButton.addEventListener("click", toggleModal);
+cancelButton.addEventListener("click", toggleModal);
+window.addEventListener("click", windowOnClick);
 
-// storeButton.addEventListener("click", storeDescription);
-// removeButton.addEventListener("click", removeDescription);
+storeButton.addEventListener("click", storeDescription);
+removeButton.addEventListener("click", removeDescription);
 
-// modalContent.addEventListener("click", function (e) {
-// 	e.stopPropagation();
-// });
+modalContent.addEventListener("click", function (e) {
+	e.stopPropagation();
+});
 
-// var DefButton = document.querySelector('.ql-definition');
-// DefButton.addEventListener('click', function () {
-// 	var range = quill.getSelection();
-// 	if (range && range.length > 0) {
-// 		const selectedTxt = quill.getText(range.index, range.length);
-// 		dlSubtitle.innerHTML = selectedTxt;
-// 		dlDescription.value = "";
-// 		dlNode = null;
-// 		toggleModal();
+var DefButton = document.querySelector('.ql-definition');
+DefButton.addEventListener('click', function () {
+	var range = quill.getSelection();
+	if (range && range.length > 0) {
+		const selectedTxt = quill.getText(range.index, range.length);
+		dlSubtitle.innerHTML = selectedTxt;
+		dlDescription.value = "";
+		dlNode = null;
+		toggleModal();
 
-// 	} else {
-// 		window.alert('Please select word/words');
-// 	}
-// });
+	} else {
+		window.alert('Please select word/words');
+	}
+});
 
 
 let blockElements = ['ql-header', 'ql-flexbox', 'ql-list', 'ql-blockquote', 'ql-code-block', 'ql-clean'];
