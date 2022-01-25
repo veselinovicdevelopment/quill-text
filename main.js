@@ -226,7 +226,9 @@ let blockElements = ['ql-header', 'ql-flexbox', 'ql-list', 'ql-blockquote', 'ql-
  */
 quill.on('text-change', function (arg) {
 	let format = quill.getFormat();
-	toolBarHandler(format.FlexBox);
+	if(format) {
+		toolBarHandler(format.FlexBox);
+	}
 	setTimeout(() => {
 		var br = document.querySelector(".quill-custom-column > br:first-child");
 		if (br) {
@@ -240,10 +242,12 @@ quill.on('text-change', function (arg) {
 	}, 1);
 });
 
-quill.on('selection-change', function (arg) {
-	let format = quill.getFormat();
-	toolBarHandler(format.FlexBox);
-}) 
+// quill.on('selection-change', function (arg) {
+// 	let format = quill.getFormat();
+// 	if(format) {
+// 		toolBarHandler(format.FlexBox);
+// 	}
+// })
 
 /**
  * Flex box focus action
